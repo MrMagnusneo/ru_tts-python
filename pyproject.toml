@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ru-tts-port"
+version = "0.1.0"
+description = "Python wrapper around the original ru_tts synthesizer"
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.scripts]
+ru-tts-python = "ru_tts_port.cli:main"
