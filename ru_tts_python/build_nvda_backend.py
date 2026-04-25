@@ -16,7 +16,7 @@ def nvda_library_name() -> str:
 
 def build_nvda_backend() -> Path:
     base = Path(__file__).resolve().parents[1]
-    vendor = base / "ru_tts_port" / "vendor_nvda"
+    vendor = base / "ru_tts_python" / "vendor_nvda"
 
     bridge = vendor / "bridge"
     sonic = vendor / "sonic"

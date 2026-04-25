@@ -1,4 +1,4 @@
-from ru_tts_port.cli import main
+from ru_tts_python.cli import main
 
 
 if __name__ == "__main__":

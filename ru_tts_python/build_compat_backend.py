@@ -5,7 +5,7 @@ from pathlib import Path
 
 def build_compat_backend() -> Path:
     base = Path(__file__).resolve().parents[1]
-    src_dir = base / "ru_tts_port" / "vendor_nvda" / "ru_tts"
+    src_dir = base / "ru_tts_python" / "vendor_nvda" / "ru_tts"
     out_dir = base / "bin"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_bin = out_dir / ("ru_tts_compat.exe" if sys.platform == "win32" else "ru_tts_compat")

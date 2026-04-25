@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 from importlib.util import find_spec
 
-from ru_tts_port.build_compat_backend import build_compat_backend
-from ru_tts_port.build_nvda_backend import build_nvda_backend, nvda_library_name
+from ru_tts_python.build_compat_backend import build_compat_backend
+from ru_tts_python.build_nvda_backend import build_nvda_backend, nvda_library_name
 
 
 def main() -> int:
