@@ -1,4 +1,4 @@
-# ru_tts_python Status
+# ru-tts-python Status
 
 Current direction changed from full C->Python transliteration to integration of the newer `ru_tts-for-nvda` backend.
 
@@ -9,7 +9,8 @@ Current direction changed from full C->Python transliteration to integration of 
    - `ru_tts_nvda` bridge
 2. Added Linux build pipeline for shared backend library:
    - `ru_tts_port/build_nvda_backend.py`
-   - output: `bin/libru_tts_nvda.so`
+   - Linux output: `bin/libru_tts_nvda.so`
+   - Windows output: `bin/ru_tts_nvda.dll`
 3. Reworked Python engine (`ru_tts_port/engine.py`) to use `ctypes` with the new backend.
 4. Reworked CLI (`ru_tts_port/cli.py`) with backend selection:
    - `nvda` (default)

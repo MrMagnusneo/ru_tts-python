@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .build_local import build_local_binary
+from .build_compat_backend import build_compat_backend
 from .build_nvda_backend import build_nvda_backend
 from .engine import RuTTSPythonEngine
 
@@ -14,8 +14,9 @@ def main() -> int:
     parser.add_argument("--format", choices=["wav", "raw"], default="wav", help="Output audio format")
     parser.add_argument("--backend", choices=["nvda", "compat"], default="nvda")
     parser.add_argument("--bin", help="Path to ru_tts executable (compat backend)")
-    parser.add_argument("--lib", help="Path to libru_tts_nvda.so (nvda backend)")
-    parser.add_argument("--build-local", action="store_true", help="Build local compatible ru_tts binary first")
+    parser.add_argument("--lib", help="Path to ru_tts NVDA backend library")
+    parser.add_argument("--build-compat", action="store_true", help="Build compatible ru_tts binary first")
+    parser.add_argument("--build-local", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--build-nvda", action="store_true", help="Force rebuild NVDA backend library before synthesis")
     parser.add_argument("--sonic-speed", type=float, default=1.0, help="Post-processing speed factor for nvda backend")
     parser.add_argument("--volume", type=float, default=1.0, help="Post-processing volume factor for nvda backend")
@@ -31,9 +32,9 @@ def main() -> int:
         extra_args = extra_args[1:]
 
     binary = args.bin
-    if args.build_local:
-        binary = str(build_local_binary())
-        print(f"Built local binary: {binary}")
+    if args.build_compat or args.build_local:
+        binary = str(build_compat_backend())
+        print(f"Built compat backend: {binary}")
     if args.build_nvda and args.backend == "nvda":
         lib_path = build_nvda_backend()
         if not args.lib:

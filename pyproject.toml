@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ru-tts-port"
+name = "ru-tts-python"
 version = "0.1.0"
-description = "Python wrapper around the original ru_tts synthesizer"
+description = "Python CLI and API integration for ru_tts using the NVDA backend"
 readme = "README.md"
 requires-python = ">=3.9"
 

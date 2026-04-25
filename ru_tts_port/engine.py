@@ -3,12 +3,13 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import wave
 from ctypes import CFUNCTYPE, CDLL, POINTER, Structure, byref, c_char_p, c_float, c_int, c_size_t, c_void_p, string_at
 from pathlib import Path
 from typing import List, Optional
 
-from .build_nvda_backend import build_nvda_backend
+from .build_nvda_backend import build_nvda_backend, nvda_library_name
 
 
 DEC_SEP_POINT = 1
@@ -42,6 +43,12 @@ def _clamp_i(value: float, lo: int, hi: int) -> int:
     return iv
 
 
+def _app_base() -> Path:
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS)  # type: ignore[attr-defined]
+    return Path(__file__).resolve().parents[1]
+
+
 class RuTTSPythonEngine:
     def __init__(
         self,
@@ -66,8 +73,8 @@ class RuTTSPythonEngine:
             raise ValueError("backend must be 'nvda' or 'compat'")
 
     def _init_nvda_backend(self, lib_path: Optional[str], auto_build: bool) -> None:
-        base = Path(__file__).resolve().parents[1]
-        default_lib = base / "bin" / "libru_tts_nvda.so"
+        base = _app_base()
+        default_lib = base / "bin" / nvda_library_name()
 
         if lib_path is not None:
             so_path = Path(lib_path)
@@ -117,9 +124,10 @@ class RuTTSPythonEngine:
         if env_bin and Path(env_bin).exists():
             return env_bin
 
-        base = Path(__file__).resolve().parents[1]
+        base = _app_base()
+        exe_name = "ru_tts_compat.exe" if sys.platform == "win32" else "ru_tts_compat"
         local_candidates = [
-            base / "bin" / "ru_tts_compat",
+            base / "bin" / exe_name,
         ]
         for candidate in local_candidates:
             if candidate.exists() and os.access(candidate, os.X_OK):
