@@ -1,22 +1,21 @@
 # ru-tts-python Status
 
-Current direction changed from full C->Python transliteration to integration of the newer `ru_tts-for-nvda` backend.
+The project now exposes one native `ru_tts` backend. The older executable backend and legacy backend-specific public naming were removed.
 
 ## Implemented
-1. Vendored updated sources in `ru_tts_python/vendor_nvda/`:
+1. Vendored backend sources in `ru_tts/vendor/`:
    - `ru_tts` core
    - `sonic` post-processor
-   - `ru_tts_nvda` bridge
-2. Added Linux build pipeline for shared backend library:
-   - `ru_tts_python/build_nvda_backend.py`
-   - Linux output: `bin/libru_tts_nvda.so`
-   - Windows output: `bin/ru_tts_nvda.dll`
-3. Reworked Python engine (`ru_tts_python/engine.py`) to use `ctypes` with the new backend.
-4. Reworked CLI (`ru_tts_python/cli.py`) with backend selection:
-   - `nvda` (default)
-   - `compat`
+   - `ru_tts_backend` bridge
+2. Added shared backend library builder:
+   - `ru_tts/build_backend.py`
+   - Linux output: `bin/libru_tts_backend.so`
+   - Windows output: `bin/ru_tts_backend.dll`
+   - macOS output: `bin/libru_tts_backend.dylib`
+3. Python engine (`ru_tts/engine.py`) uses `ctypes` with the native backend.
+4. CLI (`ru_tts/cli.py`) has a single backend and supports legacy `ru_tts` arguments after `--`.
 
-## Optional next improvements
-1. Port text preprocessing rules from NVDA driver (`abbr/latin/braille normalization`) into standalone module.
-2. Add rulex dictionary support in Linux build.
-3. Add regression tests comparing `compat` and `nvda` output metrics.
+## Optional Next Improvements
+1. Port text preprocessing rules from the original driver (`abbr/latin/braille normalization`) into a standalone module.
+2. Add rulex dictionary support in the native backend build.
+3. Add regression tests for output length and WAV headers.

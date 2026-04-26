@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import os
-import shutil
-import subprocess
 import sys
 import wave
 from ctypes import CFUNCTYPE, CDLL, POINTER, Structure, byref, c_char_p, c_float, c_int, c_size_t, c_void_p, string_at
 from pathlib import Path
 from typing import List, Optional
 
-from .build_nvda_backend import build_nvda_backend, nvda_library_name
+from .build_backend import backend_library_name, build_backend
 
 
 DEC_SEP_POINT = 1
@@ -52,40 +50,29 @@ def _app_base() -> Path:
 class RuTTSPythonEngine:
     def __init__(
         self,
-        backend: str = "nvda",
         lib_path: Optional[str] = None,
-        binary: Optional[str] = None,
         auto_build: bool = True,
     ):
-        self.backend = backend
-        self._compat_binary = binary
-
         self._lib = None
         self._tts = None
         self._audio_chunks: list[bytes] = []
         self._callback = None
+        self._init_backend(lib_path=lib_path, auto_build=auto_build)
 
-        if self.backend == "nvda":
-            self._init_nvda_backend(lib_path=lib_path, auto_build=auto_build)
-        elif self.backend == "compat":
-            self._compat_binary = binary or self._detect_compat_binary()
-        else:
-            raise ValueError("backend must be 'nvda' or 'compat'")
-
-    def _init_nvda_backend(self, lib_path: Optional[str], auto_build: bool) -> None:
+    def _init_backend(self, lib_path: Optional[str], auto_build: bool) -> None:
         base = _app_base()
-        default_lib = base / "bin" / nvda_library_name()
+        default_lib = base / "bin" / backend_library_name()
 
         if lib_path is not None:
             so_path = Path(lib_path)
         else:
-            env_lib = os.environ.get("RU_TTS_NVDA_LIB")
+            env_lib = os.environ.get("RU_TTS_LIB")
             so_path = Path(env_lib) if env_lib else default_lib
 
         if not so_path.exists():
             if not auto_build:
-                raise FileNotFoundError(f"NVDA backend library not found: {so_path}")
-            so_path = build_nvda_backend()
+                raise FileNotFoundError(f"ru_tts backend library not found: {so_path}")
+            so_path = build_backend()
 
         self._lib = CDLL(str(so_path))
 
@@ -116,28 +103,7 @@ class RuTTSPythonEngine:
 
         self._tts = self._lib.tts_create(self._callback)
         if not self._tts:
-            raise RuntimeError("Failed to create NVDA ru_tts instance")
-
-    @staticmethod
-    def _detect_compat_binary() -> str:
-        env_bin = os.environ.get("RU_TTS_BIN")
-        if env_bin and Path(env_bin).exists():
-            return env_bin
-
-        base = _app_base()
-        exe_name = "ru_tts_compat.exe" if sys.platform == "win32" else "ru_tts_compat"
-        local_candidates = [
-            base / "bin" / exe_name,
-        ]
-        for candidate in local_candidates:
-            if candidate.exists() and os.access(candidate, os.X_OK):
-                return str(candidate)
-
-        global_bin = shutil.which("ru_tts")
-        if global_bin:
-            return global_bin
-
-        raise FileNotFoundError("ru_tts compat binary was not found. Build local binary or set RU_TTS_BIN.")
+            raise RuntimeError("Failed to create ru_tts instance")
 
     def _apply_legacy_args(self, conf: RU_TTS_CONF_T, args: Optional[List[str]]) -> None:
         if not args:
@@ -174,21 +140,6 @@ class RuTTSPythonEngine:
         sonic_speed: float = 1.0,
         volume: float = 1.0,
     ) -> bytes:
-        if self.backend == "compat":
-            cmd = [self._compat_binary]
-            if args:
-                cmd.extend(args)
-            proc = subprocess.run(
-                cmd,
-                input=text.encode("koi8-r", errors="replace"),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=False,
-            )
-            if proc.returncode != 0:
-                raise RuntimeError(proc.stderr.decode("utf-8", errors="replace").strip() or "compat ru_tts failed")
-            return proc.stdout
-
         self._audio_chunks.clear()
 
         conf = RU_TTS_CONF_T()
@@ -212,19 +163,7 @@ class RuTTSPythonEngine:
     ) -> bytes:
         raw = self.synthesize_raw(text=text, args=args, sonic_speed=sonic_speed, volume=volume)
 
-        if self.backend == "compat":
-            # 8-bit unsigned mono PCM, 10kHz
-            import io
-
-            bio = io.BytesIO()
-            with wave.open(bio, "wb") as w:
-                w.setnchannels(1)
-                w.setsampwidth(1)
-                w.setframerate(10000)
-                w.writeframes(raw)
-            return bio.getvalue()
-
-        # NVDA backend returns 16-bit signed little-endian mono PCM, 10kHz
+        # The native backend returns 16-bit signed little-endian mono PCM, 10kHz.
         import io
 
         bio = io.BytesIO()

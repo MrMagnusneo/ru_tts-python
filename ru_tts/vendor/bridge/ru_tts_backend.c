@@ -5,7 +5,7 @@
 
 #include <sonic.h>
 #include <ru_tts.h>
-#include "ru_tts_nvda.h"
+#include "ru_tts_backend.h"
 
 #define SUCCESS 0
 #define FAILURE 1

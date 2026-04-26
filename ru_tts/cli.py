@@ -2,24 +2,19 @@ import argparse
 import sys
 from pathlib import Path
 
-from .build_compat_backend import build_compat_backend
-from .build_nvda_backend import build_nvda_backend
+from .build_backend import build_backend
 from .engine import RuTTSPythonEngine
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="ru_tts Python (NVDA-based backend)")
+    parser = argparse.ArgumentParser(description="ru_tts Python")
     parser.add_argument("--text", help="Input text. If not set, text is read from stdin.")
     parser.add_argument("--out", default="ru_tts.wav", help="Output path")
     parser.add_argument("--format", choices=["wav", "raw"], default="wav", help="Output audio format")
-    parser.add_argument("--backend", choices=["nvda", "compat"], default="nvda")
-    parser.add_argument("--bin", help="Path to ru_tts executable (compat backend)")
-    parser.add_argument("--lib", help="Path to ru_tts NVDA backend library")
-    parser.add_argument("--build-compat", action="store_true", help="Build compatible ru_tts binary first")
-    parser.add_argument("--build-local", action="store_true", help=argparse.SUPPRESS)
-    parser.add_argument("--build-nvda", action="store_true", help="Force rebuild NVDA backend library before synthesis")
-    parser.add_argument("--sonic-speed", type=float, default=1.0, help="Post-processing speed factor for nvda backend")
-    parser.add_argument("--volume", type=float, default=1.0, help="Post-processing volume factor for nvda backend")
+    parser.add_argument("--lib", help="Path to ru_tts backend library")
+    parser.add_argument("--build-backend", action="store_true", help="Force rebuild backend library before synthesis")
+    parser.add_argument("--sonic-speed", type=float, default=1.0, help="Post-processing speed factor")
+    parser.add_argument("--volume", type=float, default=1.0, help="Post-processing volume factor")
     parser.add_argument("tts_args", nargs=argparse.REMAINDER, help="Legacy ru_tts args: -r -p -e -g -a -d.")
     args = parser.parse_args()
 
@@ -31,21 +26,15 @@ def main() -> int:
     if extra_args and extra_args[0] == "--":
         extra_args = extra_args[1:]
 
-    binary = args.bin
-    if args.build_compat or args.build_local:
-        binary = str(build_compat_backend())
-        print(f"Built compat backend: {binary}")
-    if args.build_nvda and args.backend == "nvda":
-        lib_path = build_nvda_backend()
+    if args.build_backend:
+        lib_path = build_backend()
         if not args.lib:
             args.lib = str(lib_path)
-        print(f"Built NVDA backend: {args.lib}")
+        print(f"Built backend: {args.lib}")
 
     auto_build = True
     engine = RuTTSPythonEngine(
-        backend=args.backend,
         lib_path=args.lib,
-        binary=binary,
         auto_build=auto_build,
     )
 

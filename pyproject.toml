@@ -5,9 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ru-tts-python"
 version = "0.1.0"
-description = "Python CLI and API integration for ru_tts using the NVDA backend"
+description = "Python CLI and API integration for ru_tts"
 readme = "README.md"
 requires-python = ">=3.9"
 
 [project.scripts]
-ru-tts-python = "ru_tts_python.cli:main"
+ru-tts-python = "ru_tts.cli:main"
+
+[tool.setuptools]
+packages = ["ru_tts", "ru_tts.native"]
+
+[tool.setuptools.package-data]
+ru_tts = [
+  "vendor/bridge/*.c",
+  "vendor/bridge/*.h",
+  "vendor/ru_tts/*",
+  "vendor/sonic/*.c",
+  "vendor/sonic/*.h",
+]

@@ -6,17 +6,17 @@ import subprocess
 from pathlib import Path
 
 
-def nvda_library_name() -> str:
+def backend_library_name() -> str:
     if sys.platform == "win32":
-        return "ru_tts_nvda.dll"
+        return "ru_tts_backend.dll"
     if sys.platform == "darwin":
-        return "libru_tts_nvda.dylib"
-    return "libru_tts_nvda.so"
+        return "libru_tts_backend.dylib"
+    return "libru_tts_backend.so"
 
 
-def build_nvda_backend() -> Path:
+def build_backend() -> Path:
     base = Path(__file__).resolve().parents[1]
-    vendor = base / "ru_tts_python" / "vendor_nvda"
+    vendor = base / "ru_tts" / "vendor"
 
     bridge = vendor / "bridge"
     sonic = vendor / "sonic"
@@ -24,10 +24,10 @@ def build_nvda_backend() -> Path:
 
     out_dir = base / "bin"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_lib = out_dir / nvda_library_name()
+    out_lib = out_dir / backend_library_name()
 
     sources = [
-        bridge / "ru_tts_nvda.c",
+        bridge / "ru_tts_backend.c",
         sonic / "sonic.c",
         ru_tts / "utterance.c",
         ru_tts / "transcription.c",
