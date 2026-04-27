@@ -24,8 +24,10 @@
 - Синтез русской речи в WAV или raw PCM.
 - Ввод текста через `--text` или stdin.
 - Единый backend: `ru_tts` + `sonic`, 16-bit PCM.
+- Два голоса: мужской по умолчанию и женский через legacy-флаг `-a`.
 - Legacy-аргументы `ru_tts` после `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-d.`, `-d,`, `-d-`.
 - Post-processing: `--sonic-speed` и `--volume`.
+- Python API через `RuTTSPythonEngine`.
 - Сборка одного исполняемого файла для текущей ОС.
 
 ### Запуск из исходников
@@ -35,7 +37,7 @@
 - На Windows нужен MinGW-w64 `gcc` в `PATH`, например из MSYS2 MinGW.
 
 ```bash
-cd /home/x13/VScodeProjects/tts/ru-tts-python
+cd /home/x13/VScodeProjects/tts/ru_tts-python
 python -m ru_tts --text "Привет, мир" --out out.wav --format wav
 ```
 
@@ -45,16 +47,25 @@ Backend собирается автоматически при первом за
 python -m ru_tts --build-backend --text "Тест" --out out.wav
 ```
 
-Пример legacy-аргументов:
-
-```bash
-python -m ru_tts --text "Тест" --out out.wav -- -r 0.9 -p 1.1 -e 0.7
-```
-
 CLI после установки пакета:
 
 ```bash
 ru-tts-python --text "Привет" --out out.wav
+```
+
+### Примеры голосов
+| Голос | Параметры | Пример |
+| --- | --- | --- |
+| Мужской | По умолчанию | `python -m ru_tts --text "Привет, мир!" --out ru_male.wav` |
+| Женский | `-- -a` | `python -m ru_tts --text "Привет, мир!" --out ru_female.wav -- -a` |
+
+### Python API
+```python
+from ru_tts import RuTTSPythonEngine
+
+engine = RuTTSPythonEngine()
+wav_bytes = engine.synthesize_wav("Привет, мир!")
+engine.close()
 ```
 
 ### Сборка исполняемого файла
@@ -62,17 +73,20 @@ PyInstaller собирает бинарник под текущую ОС:
 - Linux: `dist/ru-tts-python`
 - Windows: `dist\ru-tts-python.exe`
 
+Сначала подготовьте нативный backend. Команды одинаковые для Linux и Windows:
+
 ```bash
 python -m pip install pyinstaller
 python -c "from ru_tts.build_backend import build_backend; build_backend()"
 python -m PyInstaller --clean ru-tts-python.spec
 ```
 
-Нативная библиотека называется `bin/libru_tts_backend.so` на Linux, `bin\ru_tts_backend.dll` на Windows и `bin/libru_tts_backend.dylib` на macOS.
+На Windows можно заменить `python` на `py`, если так настроен Python Launcher. Нативная библиотека называется `bin/libru_tts_backend.so` на Linux, `bin\ru_tts_backend.dll` на Windows и `bin/libru_tts_backend.dylib` на macOS.
 
-### Быстрая проверка
+### Проверка
 ```bash
 python -m ru_tts --help
+python -m ru_tts --text "Тест" --out /tmp/ru-tts-python-test.wav
 ```
 
 ## English
@@ -95,8 +109,10 @@ Original projects:
 - Russian speech synthesis to WAV or raw PCM.
 - Text input through `--text` or stdin.
 - Single backend: `ru_tts` + `sonic`, 16-bit PCM.
+- Two voices: male by default and female with the legacy `-a` flag.
 - Legacy `ru_tts` arguments after `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-d.`, `-d,`, `-d-`.
 - Post-processing controls: `--sonic-speed` and `--volume`.
+- Python API through `RuTTSPythonEngine`.
 - Single-file executable builds for the current OS.
 
 ### Run From Source
@@ -106,7 +122,7 @@ Requirements:
 - On Windows, MinGW-w64 `gcc` must be available in `PATH`, for example from MSYS2 MinGW.
 
 ```bash
-cd /home/x13/VScodeProjects/tts/ru-tts-python
+cd /home/x13/VScodeProjects/tts/ru_tts-python
 python -m ru_tts --text "Привет, мир" --out out.wav --format wav
 ```
 
@@ -116,16 +132,25 @@ The backend is built automatically on first run if the native library does not e
 python -m ru_tts --build-backend --text "Тест" --out out.wav
 ```
 
-Legacy argument example:
-
-```bash
-python -m ru_tts --text "Тест" --out out.wav -- -r 0.9 -p 1.1 -e 0.7
-```
-
 Installed CLI:
 
 ```bash
 ru-tts-python --text "Привет" --out out.wav
+```
+
+### Voice Examples
+| Voice | Parameters | Example |
+| --- | --- | --- |
+| Male | Default | `python -m ru_tts --text "Привет, мир!" --out ru_male.wav` |
+| Female | `-- -a` | `python -m ru_tts --text "Привет, мир!" --out ru_female.wav -- -a` |
+
+### Python API
+```python
+from ru_tts import RuTTSPythonEngine
+
+engine = RuTTSPythonEngine()
+wav_bytes = engine.synthesize_wav("Привет, мир!")
+engine.close()
 ```
 
 ### Build Executable
@@ -133,15 +158,18 @@ PyInstaller builds for the current OS:
 - Linux: `dist/ru-tts-python`
 - Windows: `dist\ru-tts-python.exe`
 
+Prepare the native backend first. The commands are the same on Linux and Windows:
+
 ```bash
 python -m pip install pyinstaller
 python -c "from ru_tts.build_backend import build_backend; build_backend()"
 python -m PyInstaller --clean ru-tts-python.spec
 ```
 
-The native library is named `bin/libru_tts_backend.so` on Linux, `bin\ru_tts_backend.dll` on Windows, and `bin/libru_tts_backend.dylib` on macOS.
+On Windows, replace `python` with `py` if that is how Python Launcher is configured. The native library is named `bin/libru_tts_backend.so` on Linux, `bin\ru_tts_backend.dll` on Windows, and `bin/libru_tts_backend.dylib` on macOS.
 
-### Smoke Test
+### Checks
 ```bash
 python -m ru_tts --help
+python -m ru_tts --text "Тест" --out /tmp/ru-tts-python-test.wav
 ```
