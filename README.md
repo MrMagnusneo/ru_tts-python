@@ -11,6 +11,7 @@
 
 Оригинальные проекты:
 - `ru_tts`: https://github.com/poretsky/ru_tts
+- `ru_tts`: https://gitverse.ru/kvark128/ru_tts-for-nvda
 
 ### Структура
 - `ru_tts/` - Python-пакет, CLI и API.
@@ -96,6 +97,7 @@ python -m ru_tts --text "Тест" --out /tmp/ru-tts-python-test.wav
 
 Original projects:
 - `ru_tts`: https://github.com/poretsky/ru_tts
+- `ru_tts`: https://gitverse.ru/kvark128/ru_tts-for-nvda
 
 ### Layout
 - `ru_tts/` - Python package, CLI, and API.
