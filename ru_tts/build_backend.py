@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 
 def backend_library_name() -> str:
@@ -14,7 +15,7 @@ def backend_library_name() -> str:
     return "libru_tts_backend.so"
 
 
-def build_backend() -> Path:
+def build_backend(output_dir: Optional[Path] = None) -> Path:
     base = Path(__file__).resolve().parents[1]
     vendor = base / "ru_tts" / "vendor"
 
@@ -22,7 +23,7 @@ def build_backend() -> Path:
     sonic = vendor / "sonic"
     ru_tts = vendor / "ru_tts"
 
-    out_dir = base / "bin"
+    out_dir = Path(output_dir) if output_dir is not None else base / "bin"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_lib = out_dir / backend_library_name()
 
