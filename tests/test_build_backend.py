@@ -12,10 +12,7 @@ class BuildBackendTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_dir = Path(tmp_dir)
 
-            try:
-                library = build_backend(output_dir=output_dir)
-            except TypeError as exc:
-                self.fail(f"build_backend must accept output_dir: {exc}")
+            library = build_backend(output_dir=output_dir)
 
             self.assertEqual(library, output_dir / backend_library_name())
             self.assertTrue(library.is_file())
