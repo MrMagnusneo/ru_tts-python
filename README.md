@@ -9,13 +9,14 @@
 ### О проекте
 `ru-tts-python` - Python CLI и API для `ru_tts`. Python-часть управляет синтезом, а аудио генерируется одним нативным backend.
 
-Оригинальные проекты:
-- `ru_tts`: https://github.com/poretsky/ru_tts
-- `ru_tts`: https://gitverse.ru/kvark128/ru_tts-for-nvda
+Используемые оригинальные проекты:
+- `ru_tts` v6.3.3: https://github.com/poretsky/ru_tts
+- Sonic (`b93885d` из `ru_tts-for-nvda`): https://gitverse.ru/kvark128/ru_tts-for-nvda
 
 ### Структура
 - `ru_tts/` - Python-пакет, CLI и API.
 - `ru_tts/vendor/` - C-исходники backend.
+- `ru_tts/vendor/UPSTREAM.md` - точные версии и происхождение нативных исходников.
 - `ru_tts/native/` - Python-интеграция с нативным backend.
 - `ru_tts/build_backend.py` - сборка нативной backend-библиотеки.
 - `bin/` - собранные локальные backend-артефакты.
@@ -26,7 +27,8 @@
 - Ввод текста через `--text` или stdin.
 - Единый backend: `ru_tts` + `sonic`, 16-bit PCM.
 - Два голоса: мужской по умолчанию и женский через legacy-флаг `-a`.
-- Legacy-аргументы `ru_tts` после `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-d.`, `-d,`, `-d-`.
+- Legacy-аргументы `ru_tts` после `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-l`, `-d.`, `-d,`, `-d-`.
+- Адаптивный алгоритм скорости из `ru_tts` v6.3.3 используется по умолчанию; `-- -l` включает прежний линейный алгоритм.
 - Post-processing: `--sonic-speed` и `--volume`.
 - Python API через `RuTTSPythonEngine`.
 - Сборка одного исполняемого файла для текущей ОС.
@@ -59,6 +61,12 @@ ru-tts-python --text "Привет" --out out.wav
 | --- | --- | --- |
 | Мужской | По умолчанию | `python -m ru_tts --text "Привет, мир!" --out ru_male.wav` |
 | Женский | `-- -a` | `python -m ru_tts --text "Привет, мир!" --out ru_female.wav -- -a` |
+
+Пример старого алгоритма изменения скорости:
+
+```bash
+python -m ru_tts --text "Проверка скорости" --out legacy-rate.wav -- -l
+```
 
 ### Python API
 ```python
@@ -95,13 +103,14 @@ python -m ru_tts --text "Тест" --out /tmp/ru-tts-python-test.wav
 ### About
 `ru-tts-python` is a Python CLI and API for `ru_tts`. The Python layer controls synthesis, while audio generation is provided by a single native backend.
 
-Original projects:
-- `ru_tts`: https://github.com/poretsky/ru_tts
-- `ru_tts`: https://gitverse.ru/kvark128/ru_tts-for-nvda
+Upstream projects in use:
+- `ru_tts` v6.3.3: https://github.com/poretsky/ru_tts
+- Sonic (`b93885d` from `ru_tts-for-nvda`): https://gitverse.ru/kvark128/ru_tts-for-nvda
 
 ### Layout
 - `ru_tts/` - Python package, CLI, and API.
 - `ru_tts/vendor/` - C backend sources.
+- `ru_tts/vendor/UPSTREAM.md` - exact versions and provenance of native sources.
 - `ru_tts/native/` - Python integration with the native backend.
 - `ru_tts/build_backend.py` - native backend library builder.
 - `bin/` - locally built backend artifacts.
@@ -112,7 +121,8 @@ Original projects:
 - Text input through `--text` or stdin.
 - Single backend: `ru_tts` + `sonic`, 16-bit PCM.
 - Two voices: male by default and female with the legacy `-a` flag.
-- Legacy `ru_tts` arguments after `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-d.`, `-d,`, `-d-`.
+- Legacy `ru_tts` arguments after `--`: `-r`, `-p`, `-e`, `-g`, `-a`, `-l`, `-d.`, `-d,`, `-d-`.
+- The adaptive rate algorithm from `ru_tts` v6.3.3 is the default; `-- -l` selects the former linear algorithm.
 - Post-processing controls: `--sonic-speed` and `--volume`.
 - Python API through `RuTTSPythonEngine`.
 - Single-file executable builds for the current OS.
@@ -145,6 +155,12 @@ ru-tts-python --text "Привет" --out out.wav
 | --- | --- | --- |
 | Male | Default | `python -m ru_tts --text "Привет, мир!" --out ru_male.wav` |
 | Female | `-- -a` | `python -m ru_tts --text "Привет, мир!" --out ru_female.wav -- -a` |
+
+Legacy speech-rate algorithm example:
+
+```bash
+python -m ru_tts --text "Проверка скорости" --out legacy-rate.wav -- -l
+```
 
 ### Python API
 ```python

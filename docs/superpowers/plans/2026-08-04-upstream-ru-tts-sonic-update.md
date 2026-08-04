@@ -8,6 +8,12 @@
 
 **Tech Stack:** Python 3.9+, `unittest`, `ctypes`, GCC C11 shared-library build, `ru_tts` C sources, Sonic C API.
 
+> **Execution note:** TDD review replaced source-text assertions with observable
+> behavior. Isolated build support and `-l` parsing are implemented first; the
+> adaptive-versus-legacy PCM test then fails on the old core and passes after the
+> v6.3.3 synchronization. Exact source identity remains a separate `diff`/hash
+> verification.
+
 ## Global Constraints
 
 - `ru_tts` baseline is v6.3.3 commit `2848d2892097320ed37fc963b439b15803f47f0c`.

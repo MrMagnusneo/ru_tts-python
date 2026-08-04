@@ -15,7 +15,7 @@ def main() -> int:
     parser.add_argument("--build-backend", action="store_true", help="Force rebuild backend library before synthesis")
     parser.add_argument("--sonic-speed", type=float, default=1.0, help="Post-processing speed factor")
     parser.add_argument("--volume", type=float, default=1.0, help="Post-processing volume factor")
-    parser.add_argument("tts_args", nargs=argparse.REMAINDER, help="Legacy ru_tts args: -r -p -e -g -a -d.")
+    parser.add_argument("tts_args", nargs=argparse.REMAINDER, help="Legacy ru_tts args: -r -p -e -g -a -l -d.")
     args = parser.parse_args()
 
     text = args.text if args.text is not None else sys.stdin.read().strip()
