@@ -6,3 +6,4 @@ __pycache__/
 *.py[cod]
 *.wav
 .venv/
+.worktrees/
