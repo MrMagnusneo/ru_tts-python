@@ -13,6 +13,7 @@ from .build_backend import backend_library_name, build_backend
 DEC_SEP_POINT = 1
 DEC_SEP_COMMA = 2
 USE_ALTERNATIVE_VOICE = 4
+USE_LEGACY_RATE_ALGO = 8
 
 
 class RU_TTS_CONF_T(Structure):
@@ -114,6 +115,8 @@ class RuTTSPythonEngine:
             a = args[i]
             if a == "-a":
                 conf.flags |= USE_ALTERNATIVE_VOICE
+            elif a == "-l":
+                conf.flags |= USE_LEGACY_RATE_ALGO
             elif a in ("-d.", "-d,", "-d-"):
                 conf.flags &= ~(DEC_SEP_POINT | DEC_SEP_COMMA)
                 if a == "-d.":
