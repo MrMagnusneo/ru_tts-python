@@ -54,6 +54,10 @@ static RULEXDB *rulexdb_open(const char *path, int mode)
 {
   char *err = NULL;
   dll = dlopen(RULEX_DLL, RTLD_LAZY);
+#ifdef RESERVE_RULEX_DLL
+  if (!dll)
+    dll = dlopen(RESERVE_RULEX_DLL, RTLD_LAZY);
+#endif
   if (dll)
     {
       rulexdb_open_function do_open = (rulexdb_open_function) dlsym(dll, "rulexdb_open");
@@ -97,7 +101,8 @@ static const char *help_msg =
   "-p value -- Voice pitch factor.\n"
   "-e value -- Generated speech emotionality factor.\n"
   "-g value -- Interclause gaps duration factor.\n"
-  "-a -- Use alternative (female) voice.\n\n"
+  "-a -- Use alternative (female) voice.\n"
+  "-L -- Use legacy (linear interpolation) speech rate algorithm instead of the default adaptive one.\n\n"
 
   "Numbers treatment control options:\n"
   "-d. -- Only point should be treated as decimal separator.\n"
@@ -184,7 +189,7 @@ int main(int argc, char **argv)
   ru_tts_conf_t ru_tts_config;
 
   ru_tts_config_init(&ru_tts_config);
-  while ((c = getopt(argc, argv, "s:l:r:p:g:e:d:ahv")) != -1)
+  while ((c = getopt(argc, argv, "s:l:r:p:g:e:d:aLhv")) != -1)
     {
       switch (c)
         {
@@ -208,6 +213,9 @@ int main(int argc, char **argv)
             break;
           case 'a':
             ru_tts_config.flags |= USE_ALTERNATIVE_VOICE;
+            break;
+          case 'L':
+            ru_tts_config.flags |= USE_LEGACY_RATE_ALGO;
             break;
           case 'r':
             ru_tts_config.speech_rate = getval(optarg);
