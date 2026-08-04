@@ -1,0 +1,2 @@
+# Vendored files are kept byte-for-byte identical to their upstream snapshots.
+ru_tts/vendor/ru_tts/** -whitespace
